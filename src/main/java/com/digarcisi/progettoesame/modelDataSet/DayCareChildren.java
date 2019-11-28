@@ -7,6 +7,9 @@ public class DayCareChildren {
     private String city;
     private double[] children = new double[30];
 
+    public DayCareChildren() {
+    }
+
     public DayCareChildren(String indic_ur, String city, double[] children) {
         this.indic_ur = indic_ur;
         this.city = city;
