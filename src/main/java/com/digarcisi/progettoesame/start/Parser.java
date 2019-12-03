@@ -30,11 +30,11 @@ public class Parser {
             String line;
             try {
                 InputStreamReader inR = new InputStreamReader(in);
-                    BufferedReader buf = new BufferedReader(inR);
+                BufferedReader buf = new BufferedReader(inR);
 
-                    while ((line = buf.readLine()) != null) {
-                        data.append(line);
-                        System.out.println(line);
+                while ((line = buf.readLine()) != null) {
+                    data.append(line);
+                    System.out.println(line);
                 }
             } finally {
                 in.close();
@@ -99,16 +99,16 @@ public class Parser {
     }
 
     public List<Map> metadata(String urlDataset) throws IOException {
-        Field[] fields= DayCareChildren.class.getDeclaredFields();
-        List<Map> metaDati= new ArrayList<>();
-        BufferedReader bR= new BufferedReader(new FileReader(urlDataset));
-        String line= bR.readLine();
-        line= line.replace(",", "\t");
-        line= line.replace("\\", "\t");
-        String[] dividedLine= line.trim().split("\t");
-        int i=0;
+        Field[] fields = DayCareChildren.class.getDeclaredFields();
+        List<Map> metaDati = new ArrayList<>();
+        BufferedReader bR = new BufferedReader(new FileReader(urlDataset));
+        String line = bR.readLine();
+        line = line.replace(",", "\t");
+        line = line.replace("\\", "\t");
+        String[] dividedLine = line.trim().split("\t");
+        int i = 0;
         for (Field f : fields) {
-            Map<String, String> nameAssociation= new HashMap<>();
+            Map<String, String> nameAssociation = new HashMap<>();
             nameAssociation.put("alias", f.getName());
             nameAssociation.put("sourcefield", dividedLine[i]);
             nameAssociation.put("type", f.getType().getSimpleName());
