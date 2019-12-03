@@ -5,14 +5,15 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Parser {
 
@@ -29,11 +30,11 @@ public class Parser {
             String line;
             try {
                 InputStreamReader inR = new InputStreamReader(in);
-                BufferedReader buf = new BufferedReader(inR);
+                    BufferedReader buf = new BufferedReader(inR);
 
-                while ((line = buf.readLine()) != null) {
-                    data.append(line);
-                    System.out.println(line);
+                    while ((line = buf.readLine()) != null) {
+                        data.append(line);
+                        System.out.println(line);
                 }
             } finally {
                 in.close();
@@ -95,5 +96,24 @@ public class Parser {
             in.close();
         }
         return list;
+    }
+
+    public List<Map> metadata(String urlDataset) throws IOException {
+        Field[] fields= DayCareChildren.class.getDeclaredFields();
+        List<Map> metaDati= new ArrayList<>();
+        BufferedReader bR= new BufferedReader(new FileReader(urlDataset));
+        String line= bR.readLine();
+        line= line.replace(",", "\t");
+        line= line.replace("\\", "\t");
+        String[] dividedLine= line.trim().split("\t");
+        int i=0;
+        for (Field f : fields) {
+            Map<String, String> nameAssociation= new HashMap<>();
+            nameAssociation.put("alias", f.getName());
+            nameAssociation.put("sourcefield", dividedLine[i]);
+            nameAssociation.put("type", f.getType().getSimpleName());
+            metaDati.add(nameAssociation);
+        }
+        return metaDati;
     }
 }
