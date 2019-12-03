@@ -1,4 +1,4 @@
-package com.digarcisi.progettoesame.start;
+package com.digarcisi.progettoesame.service.utils;
 
 import com.digarcisi.progettoesame.modelDataSet.DayCareChildren;
 import org.json.simple.JSONArray;
@@ -7,7 +7,6 @@ import org.json.simple.JSONValue;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -75,7 +74,7 @@ public class Parser {
             BufferedReader buf = new BufferedReader(inR);
             buf.readLine();  //salta la riga header
             while ((line = buf.readLine()) != null) {
-                System.out.println(line);
+                //System.out.println(line);
                 String[] fields = line.split(",\t");
                 DayCareChildren nuovo = new DayCareChildren();
                 nuovo.setIndic_ur(fields[0]);
@@ -93,7 +92,8 @@ public class Parser {
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
-            in.close();
+            if (in != null)
+                in.close();
         }
         return list;
     }
