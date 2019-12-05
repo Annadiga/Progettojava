@@ -61,7 +61,7 @@ public class Parser {
                     String urlDataset = (String) o1.get("url");
                     //System.out.println(format + " | " + urlDataset);
                     if (format.equals("http://publications.europa.eu/resource/authority/file-type/TSV")) {
-                        System.out.println("OK2");
+                        //System.out.println("OK2");
                         return getFinalURL(urlDataset);
                     }
                 }
@@ -119,9 +119,9 @@ public class Parser {
         return list;
     }
 
-    public List<Map> metadata() {
+    public ArrayList<Map> metadata() {
         Field[] fields = DayCareChildren.class.getDeclaredFields();
-        List<Map> metaDati = new ArrayList<>();
+        ArrayList<Map> metaDati = new ArrayList<>();
         //line = line.replace(",", "\t");
         String[] dividedLine = headerLine.trim().replace("\\", "\t").split("[,\t]");
         for (int i=0; i<fields.length; i++) {

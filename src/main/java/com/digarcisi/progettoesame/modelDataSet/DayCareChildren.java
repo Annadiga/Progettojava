@@ -1,8 +1,9 @@
 package com.digarcisi.progettoesame.modelDataSet;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class DayCareChildren {
+public class DayCareChildren implements Serializable {
     private String indic_ur;
     private String city;
     private double[] children = new double[30];
