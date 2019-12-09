@@ -7,15 +7,27 @@ import org.json.simple.JSONValue;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Parser {
 
+    private String headerLine;
+
+    public static String getFinalURL(String url) throws IOException {
+        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        con.setInstanceFollowRedirects(false);
+        con.connect();
+        con.getInputStream();
+
+        if (con.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM || con.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
+            String redirectUrl = con.getHeaderField("Location");
+            return getFinalURL(redirectUrl);
+        }
+        return url;
+    }
 
     public String getDataUrlFromJSON(String urlJSON) {
         //String url = "http://data.europa.eu/euodp/data/api/3/action/package_show?id=2rDGENQaYvidkf7nfM2g";
@@ -33,7 +45,7 @@ public class Parser {
 
                 while ((line = buf.readLine()) != null) {
                     data.append(line);
-                    System.out.println(line);
+                    //System.out.println(line);
                 }
             } finally {
                 in.close();
@@ -47,10 +59,10 @@ public class Parser {
                     JSONObject o1 = (JSONObject) o;
                     String format = (String) o1.get("format");
                     String urlDataset = (String) o1.get("url");
-                    System.out.println(format + " | " + urlDataset);
+                    //System.out.println(format + " | " + urlDataset);
                     if (format.equals("http://publications.europa.eu/resource/authority/file-type/TSV")) {
-                        System.out.println("OK2");
-                        return urlDataset;
+                        //System.out.println("OK2");
+                        return getFinalURL(urlDataset);
                     }
                 }
             }
@@ -61,7 +73,7 @@ public class Parser {
         return "";
     }
 
-    public ArrayList<DayCareChildren> parsing(String urlDataset) throws IOException {
+    public ArrayList<DayCareChildren> parsing(String urlDataset) {
         InputStream in = null;
         ArrayList<DayCareChildren> list = new ArrayList<>();
         try {
@@ -72,10 +84,16 @@ public class Parser {
             String line;
             InputStreamReader inR = new InputStreamReader(in);
             BufferedReader buf = new BufferedReader(inR);
-            buf.readLine();  //salta la riga header
+            /* stampa il file intero
             while ((line = buf.readLine()) != null) {
-                //System.out.println(line);
-                String[] fields = line.split(",\t");
+                System.out.println(line);
+            }*/
+
+            this.headerLine = buf.readLine();  //salta la riga header
+            while ((line = buf.readLine()) != null) {
+                String[] fields = line.split("[,\t]");
+                if (fields.length!=32) continue; //salta la riga se essa contiene un numero di campi invalido, ovvero diverso da 32
+                if (fields[1].length()==2) continue; //salta le righe riferite alle nazioni
                 DayCareChildren nuovo = new DayCareChildren();
                 nuovo.setIndic_ur(fields[0]);
                 nuovo.setCity(fields[1]);
@@ -84,7 +102,7 @@ public class Parser {
                         double val = Double.parseDouble(fields[31 - i]);
                         nuovo.setTime(val, i);
                     } catch (NumberFormatException e) {
-                        System.err.println("Campo vuoto o non valido");
+                        nuovo.setTime(-1,i);    //setta il valore a -1 per identificare il campo mancante
                     }
                 }
                 list.add(nuovo);
@@ -92,26 +110,25 @@ public class Parser {
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
-            if (in != null)
-                in.close();
+            try {
+                if (in != null) in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return list;
     }
 
-    public List<Map> metadata(String urlDataset) throws IOException {
+    public ArrayList<Map> metadata() {
         Field[] fields = DayCareChildren.class.getDeclaredFields();
-        List<Map> metaDati = new ArrayList<>();
-        BufferedReader bR = new BufferedReader(new FileReader(urlDataset));
-        String line = bR.readLine();
-        line = line.replace(",", "\t");
-        line = line.replace("\\", "\t");
-        String[] dividedLine = line.trim().split("\t");
-        int i = 0;
-        for (Field f : fields) {
+        ArrayList<Map> metaDati = new ArrayList<>();
+        //line = line.replace(",", "\t");
+        String[] dividedLine = headerLine.trim().replace("\\", "\t").split("[,\t]");
+        for (int i=0; i<fields.length; i++) {
             Map<String, String> nameAssociation = new HashMap<>();
-            nameAssociation.put("alias", f.getName());
+            nameAssociation.put("alias", fields[i].getName());
             nameAssociation.put("sourcefield", dividedLine[i]);
-            nameAssociation.put("type", f.getType().getSimpleName());
+            nameAssociation.put("type", fields[i].getType().getSimpleName());
             metaDati.add(nameAssociation);
         }
         return metaDati;
