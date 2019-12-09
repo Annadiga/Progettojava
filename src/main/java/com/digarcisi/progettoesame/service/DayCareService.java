@@ -2,9 +2,11 @@ package com.digarcisi.progettoesame.service;
 
 import com.digarcisi.progettoesame.modelDataSet.DayCareChildren;
 import com.digarcisi.progettoesame.service.utils.Parser;
+import com.digarcisi.progettoesame.service.utils.Statistics;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -72,5 +74,38 @@ public class DayCareService {
 
     public ArrayList<Map> getMetadata() {
         return metadata;
+    }
+
+
+    public Map getStats(String nomeCampo) {
+        return Statistics.getAllStats(nomeCampo, getValoriCampo(nomeCampo));
+    }
+
+    private List getValoriCampo(String nomeCampo) {
+        List<Object> values = new ArrayList<>(); //inizializzo lista che conterrà i valori del campo
+        try {
+            int anno = Integer.parseInt(nomeCampo);
+            //caso in cui nomeCampo sia un anno: verifico che sia uno degli anni gestiti
+            if(anno>=1990 && anno<=2019) {
+                for(DayCareChildren elem : dataset){
+                    double value= elem.getChildren(anno-1990); //considero solo l'elemento che mi interessa del metodo get
+                    if (value != -1) values.add(value);
+                }
+            }
+            //caso in cui nomeCampo non sia un anno
+        }catch (NumberFormatException e){
+                //serve per scorrere tutti gli oggetti ed estrarre i valori del campo nomeCampo
+                for (DayCareChildren elem : dataset) {
+                   /* Method getter = DayCareChildren.class.getMethod("get" + nomeCampo.substring(0, 1).toUpperCase() + nomeCampo.substring(1)); //costruisco il metodo get del modello di riferimento
+                    Object value = getter.invoke(contr); //invoco il metodo get sull'oggetto della classe modellante
+                    values.add(value); //aggiungo il valore alla lista */
+                   if (nomeCampo.equals("indic_ur")) {
+                       values.add(elem.getIndic_ur());
+                   }else if (nomeCampo.equals("cities")) {
+                       values.add(elem.getCity());
+                   }
+                }
+        }
+        return values; //ritorno la lista
     }
 }

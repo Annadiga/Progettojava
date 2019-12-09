@@ -62,8 +62,7 @@ public abstract class Statistics {
         return map;
     }
 
-
-    public static Map<String, Object> showStats(String fieldName, List lista) {
+    public static Map getAllStats(String fieldName, List lista) {
         Map<String, Object> map = new HashMap<>();
         map.put("field", fieldName);
         if (!lista.isEmpty()) {
