@@ -53,7 +53,7 @@ public class DayCareService {
             this.metadata = p.metadata();
             //salvataggio file seriale dataset
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(datasetSerialFileName))) {
-                oos.writeObject(dataset.toArray(new DayCareChildren[0]));    // la lista viene salvata come array per evitare successivi problemi di casting in lettura
+                oos.writeObject(dataset.toArray(new DayCareChildren[0]));    // si salva la lista come array per evitare problemi di casting in lettura
             } catch (IOException e) {
                 e.printStackTrace();
             }

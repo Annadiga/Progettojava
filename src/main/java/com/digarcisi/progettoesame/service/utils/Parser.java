@@ -100,9 +100,9 @@ public class Parser {
                 for (int i = 0; i < 30; i++) {
                     try {
                         double val = Double.parseDouble(fields[31 - i]);
-                        nuovo.setTime(val, i);
+                        nuovo.setChildren(val, i);
                     } catch (NumberFormatException e) {
-                        nuovo.setTime(-1,i);    //setta il valore a -1 per identificare il campo mancante
+                        nuovo.setChildren(-1,i);    //setta il valore a -1 per identificare il campo mancante
                     }
                 }
                 list.add(nuovo);

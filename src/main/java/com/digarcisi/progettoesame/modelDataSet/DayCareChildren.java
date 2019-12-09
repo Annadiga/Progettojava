@@ -38,7 +38,7 @@ public class DayCareChildren implements Serializable {
 
     }
 
-    public void setTime(double children, int year) {
+    public void setChildren(double children, int year) {
         this.children[year] = children;
 
     }
