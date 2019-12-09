@@ -35,7 +35,10 @@ public class DayCareChildren implements Serializable {
 
     public double getChildren(int year) {
         return children[year];
+    }
 
+    public double[] getChildren() {
+        return children;
     }
 
     public void setChildren(double children, int year) {
