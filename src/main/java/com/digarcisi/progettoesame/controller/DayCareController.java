@@ -22,7 +22,7 @@ public class DayCareController {
     }
 
     @GetMapping("/metadata")
-    public List getMetedata() {
+    public List getMetadata() {
         return service.getMetadata();
     }
 }
