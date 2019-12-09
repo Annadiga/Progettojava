@@ -65,4 +65,12 @@ public class DayCareService {
             }
         }
     }
+
+    public ArrayList<DayCareChildren> getDataset() {
+        return dataset;
+    }
+
+    public ArrayList<Map> getMetadata() {
+        return metadata;
+    }
 }
