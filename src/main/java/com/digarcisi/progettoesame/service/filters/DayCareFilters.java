@@ -91,5 +91,18 @@ public abstract class DayCareFilters {
 
     }
 
+    public static List<Integer> filtra(List valori, String op, Object riferimento) {
+        List<Integer> valoriFiltrati = new ArrayList<>();
+        for (int i = 0; i < valori.size(); i++) {
+            if (sceltaFiltro(valori.get(i), op, riferimento))
+                valoriFiltrati.add(i);
+        }
+        return valoriFiltrati;
+    }
+
+    public static List<String> getOpFiltro() {
+        return opFiltro;
+    }
+
 
 }
