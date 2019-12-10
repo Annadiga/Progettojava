@@ -25,8 +25,8 @@ public abstract class DayCareFilters {
                         case "$lt":
                             return dValore < dRiferimento;
                         default:
-                            String stampa = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
-                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampa);
+                            String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
                     }
                 } else if (riferimento instanceof List) {
                     List lRiferimento = ((List) riferimento);
@@ -45,20 +45,51 @@ public abstract class DayCareFilters {
                                 double estremoSup = lDRiferimento.get(1);
                                 return dValore <= estremoSup && dValore >= estremoInf;
                             default:
-                                String stampa = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
-                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampa);
+                                String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
+                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
                         }
                     } else
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La lista di riferimenti è vuota o contiene elementi non validi");
-                }
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
-            }else if(valore instanceof String){
+                } else
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il riferimento: " + riferimento + " non è compatibile con il valore: " + valore);
+            } else if (valore instanceof String) {
+                String sValue = ((String) valore);
+                if (riferimento instanceof String) {
+                    String sRiferimento = ((String) riferimento);
+                    switch (op) {
+                        case "$not":
+                            return !sValue.equals(sRiferimento);
+                        default:
+                            String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
+                    }
+                } else if (riferimento instanceof List) {
+                    List lRiferimento = ((List) riferimento);
+                    if (!lRiferimento.isEmpty() && lRiferimento.get(0) instanceof String) {
+                        List<String> lSRiferimento = new ArrayList<>();
+                        for (Object elem : lRiferimento) {
+                            lSRiferimento.add((String) elem);
+                        }
+                        switch (op) {
+                            case "$in":
+                                return lSRiferimento.contains(sValue);
+                            case "$nin":
+                                return lSRiferimento.contains(sValue);
+                            default:
+                                String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
+                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
+                        }
+                    } else
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La lista di riferimenti è vuota o contiene elementi non validi");
+                } else
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il riferimento: " + riferimento + " non è compatibile con il valore: " + valore);
+            } else
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il valore: " + valore + "non è valido");
 
-            }
-
-        }
-
+        } else
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'opratore: " + op + " non è valido");
 
     }
+
 
 }
