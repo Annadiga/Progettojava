@@ -1,6 +1,7 @@
 package com.digarcisi.progettoesame.service;
 
 import com.digarcisi.progettoesame.modelDataSet.DayCareChildren;
+import com.digarcisi.progettoesame.service.filters.DayCareFilters;
 import com.digarcisi.progettoesame.service.utils.Parser;
 import com.digarcisi.progettoesame.service.utils.Statistics;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,10 @@ public class DayCareService {
     private ArrayList<DayCareChildren> dataset;
     private ArrayList<Map> metadata;
 
-    public DayCareService(){
+    public DayCareService() {
         String datasetSerialFileName = "dataset.ser";
         String metadataSerialFileName = "metadata.ser";
-        if (Files.exists(Paths.get(datasetSerialFileName))){
+        if (Files.exists(Paths.get(datasetSerialFileName))) {
             //carica il file seriale esistente
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(datasetSerialFileName))) {
                 dataset = new ArrayList<>(Arrays.asList((DayCareChildren[]) ois.readObject()));
@@ -42,8 +43,7 @@ public class DayCareService {
                 System.err.println("Classe non trovata");
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
             Parser p = new Parser();
             String urlJSON = "http://data.europa.eu/euodp/data/api/3/action/package_show?id=2rDGENQaYvidkf7nfM2g";
             String urldataset = p.getDataUrlFromJSON(urlJSON);
@@ -86,26 +86,28 @@ public class DayCareService {
         try {
             int anno = Integer.parseInt(nomeCampo);
             //caso in cui nomeCampo sia un anno: verifico che sia uno degli anni gestiti
-            if(anno>=1990 && anno<=2019) {
-                for(DayCareChildren elem : dataset){
-                    double value= elem.getChildren(anno-1990); //considero solo l'elemento che mi interessa del metodo get
+            if (anno >= 1990 && anno <= 2019) {
+                for (DayCareChildren elem : dataset) {
+                    double value = elem.getChildren(anno - 1990); //considero solo l'elemento che mi interessa del metodo get
                     if (value != -1) values.add(value);
                 }
             }
             //caso in cui nomeCampo non sia un anno
-        }catch (NumberFormatException e){
-                //serve per scorrere tutti gli oggetti ed estrarre i valori del campo nomeCampo
-                for (DayCareChildren elem : dataset) {
+        } catch (NumberFormatException e) {
+            //serve per scorrere tutti gli oggetti ed estrarre i valori del campo nomeCampo
+            for (DayCareChildren elem : dataset) {
                    /* Method getter = DayCareChildren.class.getMethod("get" + nomeCampo.substring(0, 1).toUpperCase() + nomeCampo.substring(1)); //costruisco il metodo get del modello di riferimento
                     Object value = getter.invoke(contr); //invoco il metodo get sull'oggetto della classe modellante
                     values.add(value); //aggiungo il valore alla lista */
-                   if (nomeCampo.equals("indic_ur")) {
-                       values.add(elem.getIndic_ur());
-                   }else if (nomeCampo.equals("cities")) {
-                       values.add(elem.getCity());
-                   }
+                if (nomeCampo.equals("indic_ur")) {
+                    values.add(elem.getIndic_ur());
+                } else if (nomeCampo.equals("cities")) {
+                    values.add(elem.getCity());
                 }
+            }
         }
         return values; //ritorno la lista
     }
+
+
 }

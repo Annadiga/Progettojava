@@ -87,7 +87,7 @@ public abstract class DayCareFilters {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il valore: " + valore + "non è valido");
 
         } else
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'opratore: " + op + " non è valido");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'operatore: " + op + " non è valido");
 
     }
 
