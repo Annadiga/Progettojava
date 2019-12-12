@@ -33,11 +33,45 @@ All'avvio l'applicazione controlla se esistono già i file seriali contenenti il
 
 ## Richieste
 
-Si possono effettuare richieste di tipo GET e POST all'indirizzo http://localhost:8080 tramite le seguenti istruzioni:
+Si possono effettuare richieste di tipo GET e POST all'indirizzo  [http://localhost:8080](http://localhost:8080/)  tramite le seguenti istruzioni:
 **RICHIESTE GET**
- - **/dataset** per ottenere i dati in formato JSON.
- - **/metadata** per ottenere i metadati in formato JSON.
- - **/stats?campo="nomecampo"**(in cui "nomecampo" può essere indic_ur , cities o, per ottenere statistiche di tipo numerico, un anno compreso tra il 1990 e il 2019 inclusi) per la restituzione delle statistiche su un determinato campo del dataset.
+
+ -   **/dataset**  per ottenere i dati in formato JSON.
+ -   **/metadata**  per ottenere i metadati in formato JSON.
+ -   **/stats?campo="nomecampo"**(in cui "nomecampo" può essere indic_ur , cities o, per ottenere statistiche di tipo numerico, un anno compreso tra il 1990 e il 2019 inclusi) per la restituzione delle statistiche su un determinato campo del dataset.
+
+**RICHIESTE POST**
+ - **/dataset** restituisce i dati filtrati basandosi su ciò che viene inserito all'interno del body (per la sintassi si veda il paragrafo successivo).
+ - **/stats?campo="nomecampo"** per ottenere le statistiche filtrate su un campo. Se non viene passato il campo su cui calcolare le statistiche (**/stats**) si prenderà come default quello inserito all'interno del body. 
+
+**SINTASSI FILTRO** 
+Per le richieste POST si inserisce il filtro nel body nel modo seguente:
+
+> {"campo" : {"operatore" : "riferimento"} }
+
+in "campo" inserire il nome del campo da filtrare,
+in "operatore" inserire un operatore tra quelli implementati, in particolare:
+
+ - operatori logici:  `"$not"`, `$in", "$nin",`
+ - operatori condizionali: `"$gt", "$lt", "$bt"`
+
+ in "riferimento" il valore da confrontare  (compatibile con il tipo del campo).
+ **ESEMPI (effettuate tramite POSTMAN)**
+ GET
  
- **RICHIESTE POST**
- - 
+
+    localhost:8080/dataset
+    localhost:8080/metadata
+    localhost:8080/stats?campo=2018
+
+ POST
+ `localhost:8080/stats`  (nel body: `{ "2017" : { "$not" : 30 } }`)
+ `localhost:8080/stats?campo=2018` (nel body  `{ "2018" : { "$not" : 30 } }` )
+ se viene inserito nel body un anno differente verrà preso in considerazione quello del nomecampo nella richiesta POST
+ 
+
+   `localhost:8080/dataset`  (nel body `{ "indic_ur" : { "$not" : TE1001I } }`)
+   
+ 
+
+## DIAGRAMMI UML
