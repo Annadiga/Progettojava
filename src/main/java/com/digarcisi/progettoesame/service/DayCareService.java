@@ -108,6 +108,22 @@ public class DayCareService {
         }
         return values; //ritorno la lista
     }
-
+    public List<DayCareChildren> getDatasetFiltrato(String nomeCampo, String op, Object riferimento) {
+        List<Integer> indici  = DayCareFilters.filtra( getValoriCampo (nomeCampo), op, riferimento);
+        List<DayCareChildren> outputDataset = new ArrayList<>();
+        for (int i : indici ) {
+            outputDataset.add(dataset.get(i));
+        }
+        return outputDataset;
+    }
+    public Map getStatsFiltrate(String nomeCampoStats, String nomeCampoFiltro, String op, Object riferimento) {
+        List<Integer> indici = DayCareFilters.filtra( getValoriCampo (nomeCampoFiltro), op, riferimento);
+        List valoriCampo = getValoriCampo (nomeCampoStats);
+        List<Object> valoriFiltrati = new ArrayList<>();
+        for (int i : indici) {
+            valoriFiltrati.add(valoriCampo.get(i));
+        }
+        return Statistics.getAllStats (nomeCampoStats,valoriFiltrati);
+    }
 
 }

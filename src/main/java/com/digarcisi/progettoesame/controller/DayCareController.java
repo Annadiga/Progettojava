@@ -3,11 +3,10 @@ package com.digarcisi.progettoesame.controller;
 import com.digarcisi.progettoesame.service.DayCareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.MalformedParameterizedTypeException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class DayCareController {
     private DayCareService service;
 
-    @Autowired
+    @Autowired   //consente di creare un'istanza di service all'interno del controller (dependency injection)
     public DayCareController(DayCareService service) {
         this.service = service;
     }
@@ -56,4 +55,26 @@ public class DayCareController {
         filtro.put("riferimento", riferimento);
         return filtro;
     }
+
+    @PostMapping("/dataset")
+    public List getDatasetFiltrato(@RequestBody String body) {
+        Map<String, Object> filtro = filtroParsato(body);
+        String nomeCampo = (String) filtro.get("campo");
+        String op = (String) filtro.get("operatore");
+        Object riferimento = filtro.get("riferimento");
+        return service.getDatasetFiltrato(nomeCampo, op, riferimento);
+    }
+
+    @PostMapping("/stats")
+    public List<Map> getStatsFiltrate(@RequestParam(value = "campo", required = true, defaultValue = "") String nomeCampo, @RequestBody String body) {
+        Map<String, Object> filtro = filtroParsato(body);
+        String nomeCampoFiltro = (String) filtro.get("campo");
+        if (nomeCampo.equals("")) nomeCampo=nomeCampoFiltro;
+        String op = (String) filtro.get("operatore");
+        Object riferimento = filtro.get("riferimento");
+        List<Map> lista = new ArrayList<>();
+        lista.add(service.getStatsFiltrate(nomeCampo, nomeCampoFiltro, op, riferimento));
+        return lista;
+    }
+
 }
