@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Controller che gestisce le richieste dell'utente
+ * Controller che gestisce le richieste dell'utente.
  */
 @RestController
 public class DayCareController {
