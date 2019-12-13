@@ -44,34 +44,39 @@ Si possono effettuare richieste di tipo GET e POST all'indirizzo  [http://localh
  - **/dataset** restituisce i dati filtrati basandosi su ciò che viene inserito all'interno del body (per la sintassi si veda il paragrafo successivo).
  - **/stats?campo="nomecampo"** per ottenere le statistiche filtrate su un campo. Se non viene passato il campo su cui calcolare le statistiche (**/stats**) si prenderà come default quello inserito all'interno del body. 
 
-**SINTASSI FILTRO** 
-Per le richieste POST si inserisce il filtro nel body nel modo seguente:
+**SINTASSI FILTRO**  Per le richieste POST si inserisce il filtro nel body nel modo seguente:
 
 > {"campo" : {"operatore" : "riferimento"} }
 
-in "campo" inserire il nome del campo da filtrare,
-in "operatore" inserire un operatore tra quelli implementati, in particolare:
+in "campo" inserire il nome del campo da filtrare, in "operatore" inserire un operatore tra quelli implementati, in particolare:
 
- - operatori logici:  `"$not"`, `$in", "$nin",`
- - operatori condizionali: `"$gt", "$lt", "$bt"`
+-   operatori logici:  `"$not","$in", "$nin",`
+-   operatori condizionali:  `"$gt", "$lt", "$bt"`
 
- in "riferimento" il valore da confrontare  (compatibile con il tipo del campo).
- **ESEMPI (effettuate tramite POSTMAN)**
- GET
+in "riferimento" il valore da confrontare (compatibile con il tipo del campo). 
+
+
+**ESEMPI (richieste effettuate tramite POSTMAN)**
+
+GET
+
+```
+localhost:8080/dataset
+localhost:8080/metadata
+localhost:8080/stats?campo=2018
+
+```
+
+POST
+
+ `localhost:8080/stats`  (nel body:  `{ "2017" : { "$not" : 30 } }`) 
+ `localhost:8080/stats?campo=2018`  (nel body  `{ "2018" : { "$gt" : 30 } }`  ) se nel body viene inserito  un anno differente verrà preso in considerazione quello del nomecampo nella richiesta POST
  
+`localhost:8080/stats`  (nel body  `{ "indic_ur" : { "$not" : TE1001I } }`)
+`localhost:8080/dataset` (nel body `{ "indic_ur" : { "$not" : TE1001V} }`)
 
-    localhost:8080/dataset
-    localhost:8080/metadata
-    localhost:8080/stats?campo=2018
 
- POST
- `localhost:8080/stats`  (nel body: `{ "2017" : { "$not" : 30 } }`)
- `localhost:8080/stats?campo=2018` (nel body  `{ "2018" : { "$not" : 30 } }` )
- se viene inserito nel body un anno differente verrà preso in considerazione quello del nomecampo nella richiesta POST
- 
-
-   `localhost:8080/dataset`  (nel body `{ "indic_ur" : { "$not" : TE1001I } }`)
-   
- 
 
 ## DIAGRAMMI UML
+
+Si faccia riferimento alla sezione superiore per visionare i files contenenti i diagrammi UML.
