@@ -15,12 +15,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Classe DayCareService che gestisce l'accesso al dataset
+ */
 @Service
 public class DayCareService {
 
     private ArrayList<DayCareChildren> dataset;
     private ArrayList<Map> metadata;
 
+    /**
+     * Costruttore della classe DayCareService
+     */
     public DayCareService() {
         String datasetSerialFileName = "dataset.ser";
         String metadataSerialFileName = "metadata.ser";
@@ -68,19 +74,40 @@ public class DayCareService {
         }
     }
 
+    /**
+     * Metodo che restituisce il dataset
+     *
+     * @return la lista degli oggetti
+     */
     public ArrayList<DayCareChildren> getDataset() {
         return dataset;
     }
 
+    /**
+     * Restituisce la lista dei metadati
+     *
+     * @return metadati
+     */
     public ArrayList<Map> getMetadata() {
         return metadata;
     }
 
-
+    /**
+     * Restituisce le statistiche di un campo
+     *
+     * @param nomeCampo campo di cui ottenere le statistiche
+     * @return mappa contenente le statistiche
+     */
     public Map getStats(String nomeCampo) {
         return Statistics.getAllStats(nomeCampo, getValoriCampo(nomeCampo));
     }
 
+    /**
+     * Metodo che consente di estrarre dalla lista degli oggetti quella relativa a un campo
+     *
+     * @param nomeCampo campo da cui ottenere i valori
+     * @return lista del campo
+     */
     private List getValoriCampo(String nomeCampo) {
         List<Object> values = new ArrayList<>(); //inizializzo lista che conterrà i valori del campo
         try {
@@ -106,6 +133,14 @@ public class DayCareService {
         return values; //ritorno la lista
     }
 
+    /**
+     * Metodo che restituisce gli oggetti filtrati
+     *
+     * @param nomeCampo   campo da filtrare
+     * @param op          operatore
+     * @param riferimento valore di riferimento
+     * @return lista di oggetti che soddisfano le condizioni in base al filtro scelto
+     */
     public List<DayCareChildren> getDatasetFiltrato(String nomeCampo, String op, Object riferimento) {
         List<Integer> indici = DayCareFilters.filtra(getValoriCampo(nomeCampo), op, riferimento);
         List<DayCareChildren> outputDataset = new ArrayList<>();
@@ -115,6 +150,15 @@ public class DayCareService {
         return outputDataset;
     }
 
+    /**
+     * Metodo che restituisce le statistiche filtrate su un campo
+     *
+     * @param nomeCampoStats  nome del campo su cui si vogliono effettuare le statistiche
+     * @param nomeCampoFiltro nome campo su cui si applica il filtro
+     * @param op              operatore
+     * @param riferimento     valore di riferimento
+     * @return Mappa con le statistiche relative ad un campo filtrato
+     */
     public Map getStatsFiltrate(String nomeCampoStats, String nomeCampoFiltro, String op, Object riferimento) {
         List<Integer> indici = DayCareFilters.filtra(getValoriCampo(nomeCampoFiltro), op, riferimento);
         List valoriCampo = getValoriCampo(nomeCampoStats);
