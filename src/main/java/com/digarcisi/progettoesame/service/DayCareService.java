@@ -24,8 +24,8 @@ public class DayCareService {
     public DayCareService() {
         String datasetSerialFileName = "dataset.ser";
         String metadataSerialFileName = "metadata.ser";
-        if (Files.exists(Paths.get(datasetSerialFileName))) {
-            //carica il file seriale esistente
+        if (Files.exists(Paths.get(datasetSerialFileName))) { //controlla se il file esiste già, in questo caso esegue l'istruzione
+            //carica il file seriale esistente del dataset
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(datasetSerialFileName))) {
                 dataset = new ArrayList<>(Arrays.asList((DayCareChildren[]) ois.readObject()));
             } catch (IOException e) {
@@ -34,7 +34,7 @@ public class DayCareService {
                 System.err.println("Classe non trovata");
                 e.printStackTrace();
             }
-
+            //carica il file seriale esistente dei metadati
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(metadataSerialFileName))) {
                 metadata = new ArrayList<>(Arrays.asList((Map[]) ois.readObject()));
             } catch (IOException e) {
@@ -43,10 +43,10 @@ public class DayCareService {
                 System.err.println("Classe non trovata");
                 e.printStackTrace();
             }
-        } else {
-            Parser p = new Parser();
+        } else { //altrimenti crea tali files
+            Parser p = new Parser(); // creazione oggetto di tipo Parser
             String urlJSON = "http://data.europa.eu/euodp/data/api/3/action/package_show?id=2rDGENQaYvidkf7nfM2g";
-            String urldataset = p.getDataUrlFromJSON(urlJSON);
+            String urldataset = p.getDataUrlFromJSON(urlJSON);//l'url del dataset viene restituito dalla funzione getDataUrlFromJson
             //System.out.println(urldataset);
             this.dataset = p.parsing(urldataset);
             for (DayCareChildren elem : this.dataset) {
@@ -96,9 +96,6 @@ public class DayCareService {
         } catch (NumberFormatException e) {
             //serve per scorrere tutti gli oggetti ed estrarre i valori del campo nomeCampo
             for (DayCareChildren elem : dataset) {
-                   /* Method getter = DayCareChildren.class.getMethod("get" + nomeCampo.substring(0, 1).toUpperCase() + nomeCampo.substring(1)); //costruisco il metodo get del modello di riferimento
-                    Object value = getter.invoke(contr); //invoco il metodo get sull'oggetto della classe modellante
-                    values.add(value); //aggiungo il valore alla lista */
                 if (nomeCampo.equals("indic_ur")) {
                     values.add(elem.getIndic_ur());
                 } else if (nomeCampo.equals("cities")) {
@@ -108,22 +105,24 @@ public class DayCareService {
         }
         return values; //ritorno la lista
     }
+
     public List<DayCareChildren> getDatasetFiltrato(String nomeCampo, String op, Object riferimento) {
-        List<Integer> indici  = DayCareFilters.filtra( getValoriCampo (nomeCampo), op, riferimento);
+        List<Integer> indici = DayCareFilters.filtra(getValoriCampo(nomeCampo), op, riferimento);
         List<DayCareChildren> outputDataset = new ArrayList<>();
-        for (int i : indici ) {
+        for (int i : indici) {
             outputDataset.add(dataset.get(i));
         }
         return outputDataset;
     }
+
     public Map getStatsFiltrate(String nomeCampoStats, String nomeCampoFiltro, String op, Object riferimento) {
-        List<Integer> indici = DayCareFilters.filtra( getValoriCampo (nomeCampoFiltro), op, riferimento);
-        List valoriCampo = getValoriCampo (nomeCampoStats);
+        List<Integer> indici = DayCareFilters.filtra(getValoriCampo(nomeCampoFiltro), op, riferimento);
+        List valoriCampo = getValoriCampo(nomeCampoStats);
         List<Object> valoriFiltrati = new ArrayList<>();
         for (int i : indici) {
             valoriFiltrati.add(valoriCampo.get(i));
         }
-        return Statistics.getAllStats (nomeCampoStats,valoriFiltrati);
+        return Statistics.getAllStats(nomeCampoStats, valoriFiltrati);
     }
 
 }

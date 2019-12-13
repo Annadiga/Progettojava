@@ -13,7 +13,7 @@ public abstract class Statistics {
 
     public static double sum(List<Number> lista) {
         double s = 0;
-        for (Number n: lista) {
+        for (Number n : lista) {
             s += n.doubleValue();
         }
         return s;
@@ -54,7 +54,7 @@ public abstract class Statistics {
         Map<Object, Integer> map = new HashMap<>();
         for (Object elem : lista) {
             if (map.containsKey(elem)) {
-                map.replace(elem, map.get(elem) +1);
+                map.replace(elem, map.get(elem) + 1);
             } else {
                 map.put(elem, 1);
             }
