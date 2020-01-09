@@ -1,6 +1,8 @@
 package com.digarcisi.progettoesame.controller;
 
+import com.digarcisi.progettoesame.modelDataSet.DayCareChildren;
 import com.digarcisi.progettoesame.service.DayCareService;
+import com.digarcisi.progettoesame.service.filters.DayCareFilters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.web.bind.annotation.*;
@@ -86,6 +88,16 @@ public class DayCareController {
         return filtro;
     }
 
+
+    @DeleteMapping("/delete")
+    public List<DayCareChildren> deleteCampoFiltrato(@RequestParam(value = "campo", required = true, defaultValue = "") String nomeCampo, @RequestBody String body) {
+        Map<String, Object> filtro = filtroParsato(body);
+        String nomeCampoFiltro = (String) filtro.get("campo");
+        String op = (String) filtro.get("operatore");
+        Object riferimento = filtro.get("riferimento");
+        return service.deletebycampo(nomeCampoFiltro, op, riferimento);
+    }
+
     /**
      * Metodo che gestisce una richiesta POST alla rotta "/dataset"
      *
@@ -121,4 +133,8 @@ public class DayCareController {
         return lista;
     }
 
+    @PostMapping("/add")
+public DayCareChildren add(@RequestBody String body) {
+    return service.parseadd(body);
+}
 }

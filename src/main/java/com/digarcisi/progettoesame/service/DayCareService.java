@@ -4,7 +4,10 @@ import com.digarcisi.progettoesame.modelDataSet.DayCareChildren;
 import com.digarcisi.progettoesame.service.filters.DayCareFilters;
 import com.digarcisi.progettoesame.service.utils.Parser;
 import com.digarcisi.progettoesame.service.utils.Statistics;
+import org.springframework.boot.json.BasicJsonParser;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -115,9 +118,12 @@ public class DayCareService {
             //caso in cui nomeCampo sia un anno: verifico che sia uno degli anni gestiti
             if (anno >= 1990 && anno <= 2019) {
                 for (DayCareChildren elem : dataset) {
+
                     double value = elem.getChildren(anno - 1990); //considero solo l'elemento che mi interessa del metodo get
                     if (value != -1) values.add(value);
                 }
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il campo " + nomeCampo + " non esiste!");
             }
             //caso in cui nomeCampo non sia un anno
         } catch (NumberFormatException e) {
@@ -127,6 +133,8 @@ public class DayCareService {
                     values.add(elem.getIndic_ur());
                 } else if (nomeCampo.equals("cities")) {
                     values.add(elem.getCity());
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il campo " + nomeCampo + " non esiste!");
                 }
             }
         }
@@ -146,6 +154,7 @@ public class DayCareService {
         List<DayCareChildren> outputDataset = new ArrayList<>();
         for (int i : indici) {
             outputDataset.add(dataset.get(i));
+            System.out.println(dataset.get(i));
         }
         return outputDataset;
     }
@@ -166,7 +175,50 @@ public class DayCareService {
         for (int i : indici) {
             valoriFiltrati.add(valoriCampo.get(i));
         }
+        if (valoriFiltrati.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Non è stato trovato nessun campo " + nomeCampoStats + " per un filtro con il valore selezionato.");
+
         return Statistics.getAllStats(nomeCampoStats, valoriFiltrati);
     }
 
+    public DayCareChildren parseadd(String body) {
+        Map<String, Object> mappa = new BasicJsonParser().parseMap(body);
+        Object appoggio = mappa.get("values");
+        List elem = (List) appoggio;
+        if (elem.size() != 32) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Errore! Non sono stati inseriti 32 campi");
+        }
+        for (int i = 0; i < elem.size(); i++) {
+            if (i == 0 || i == 1) {
+                if (!(elem.get(i) instanceof String)) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il " + (i + 1) + "° campo inserito :" + elem.get(i) + " deve essere una stringa!");
+                }
+            }
+            if (i > 1) {
+                if (!(elem.get(i) instanceof Number)) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il " + (i + 1) + "° campo inserito :" + elem.get(i) + " deve essere un numero!");
+                }
+            }
+        }
+        double[] c = new double[30];
+        for (int i = 2; i < elem.size(); i++) {
+            c[i - 2] = ((Number) elem.get(i)).doubleValue();
+        }
+        DayCareChildren d = new DayCareChildren(elem.get(0).toString(), elem.get(1).toString(), c);
+        getDataset().add(d);
+        return (dataset.get(dataset.size() - 1));
+    }
+
+    public List<DayCareChildren> deletebycampo(String nomecampo, String op, Object riferimento) {
+        List<DayCareChildren> dati_da_eliminare = getDatasetFiltrato(nomecampo, op, riferimento);
+        int cont = dataset.size();
+        dataset.removeAll(dati_da_eliminare);
+        if (dati_da_eliminare.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nessun campo trovato con questo valore!");
+
+        System.out.println(cont + " - " + dati_da_eliminare.size() + " =");
+        System.out.println(dataset.size());
+
+        return dati_da_eliminare;
+    }
 }

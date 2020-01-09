@@ -1,5 +1,8 @@
 package com.digarcisi.progettoesame.service.filters;
 
+import com.digarcisi.progettoesame.modelDataSet.DayCareChildren;
+import com.digarcisi.progettoesame.service.DayCareService;
+import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -7,11 +10,12 @@ import javax.validation.constraints.Max;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Classe astratta DayCareFilters all'interno della quale sono contenuti i metodi per filtrare i campi
  */
-public abstract class DayCareFilters {
+public class DayCareFilters {
     //lista operatori
     private static final List<String> opFiltro = Arrays.asList("$not", "$in", "$nin", "$gt", "$lt", "$bt");
 
@@ -134,3 +138,4 @@ public abstract class DayCareFilters {
 
 
 }
+
