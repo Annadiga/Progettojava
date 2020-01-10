@@ -121,6 +121,7 @@ public class DayCareService {
 
                     double value = elem.getChildren(anno - 1990); //considero solo l'elemento che mi interessa del metodo get
                     if (value != -1) values.add(value);
+                    else values.add(null);
                 }
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il campo " + nomeCampo + " non esiste!");
@@ -154,7 +155,6 @@ public class DayCareService {
         List<DayCareChildren> outputDataset = new ArrayList<>();
         for (int i : indici) {
             outputDataset.add(dataset.get(i));
-            System.out.println(dataset.get(i));
         }
         return outputDataset;
     }
@@ -211,14 +211,9 @@ public class DayCareService {
 
     public List<DayCareChildren> deletebycampo(String nomecampo, String op, Object riferimento) {
         List<DayCareChildren> dati_da_eliminare = getDatasetFiltrato(nomecampo, op, riferimento);
-        int cont = dataset.size();
         dataset.removeAll(dati_da_eliminare);
         if (dati_da_eliminare.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nessun campo trovato con questo valore!");
-
-        System.out.println(cont + " - " + dati_da_eliminare.size() + " =");
-        System.out.println(dataset.size());
-
         return dati_da_eliminare;
     }
 }

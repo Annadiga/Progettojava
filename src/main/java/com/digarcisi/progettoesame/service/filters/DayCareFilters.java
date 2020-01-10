@@ -102,7 +102,7 @@ public class DayCareFilters {
                 } else
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il riferimento: " + riferimento + " non è compatibile con il valore: " + valore);
             } else
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il valore: " + valore + "non è valido");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il valore: " + valore + " non è valido");
 
         } else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'operatore: " + op + " non è valido");
@@ -121,7 +121,8 @@ public class DayCareFilters {
     public static List<Integer> filtra(List valori, String op, Object riferimento) {
         List<Integer> valoriFiltrati = new ArrayList<>();
         for (int i = 0; i < valori.size(); i++) {
-            if (sceltaFiltro(valori.get(i), op, riferimento)) //chiamata al metodo sceltaFiltro precedentemente implementato
+            Object val = valori.get(i);
+            if (val!=null && sceltaFiltro(val, op, riferimento)) //chiamata al metodo sceltaFiltro precedentemente implementato
                 valoriFiltrati.add(i);
         }
         return valoriFiltrati;
