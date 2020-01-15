@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Classe astratta DayCareFilters all'interno della quale sono contenuti i metodi per filtrare i campi
+ * Classe DayCareFilters all'interno della quale sono contenuti i metodi per filtrare i campi
  */
 public class DayCareFilters {
     //lista operatori
@@ -34,16 +34,15 @@ public class DayCareFilters {
                 double dValore = ((Number) valore).doubleValue();  //lo si converte in double
                 if (riferimento instanceof Number) {  // se riferimento è un numero si eseguono le istruzioni successive
                     double dRiferimento = ((Number) riferimento).doubleValue(); //conversione in double
-                    switch (op) { //confronta op con i vari case
-                        case "$not":
-                            return dValore != dRiferimento;
-                        case "$gt":
-                            return dValore > dRiferimento;
-                        case "$lt":
-                            return dValore < dRiferimento;
-                        default:
-                            String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
-                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
+                    if (op.equals("$not"))  //confronta op con i vari case
+                        return dValore != dRiferimento;
+                    else if (op.equals("$gt"))
+                        return dValore > dRiferimento;
+                    else if (op.equals("$lt"))
+                        return dValore < dRiferimento;
+                    else {
+                        String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
                     }
                 } else if (riferimento instanceof List) {  //se riferimento è una lista
                     List lRiferimento = ((List) riferimento); //conversione in List
@@ -53,18 +52,16 @@ public class DayCareFilters {
                         for (Object elem : lRiferimento) { //for-each
                             lDRiferimento.add(((Number) elem).doubleValue());
                         }
-                        switch (op) {
-                            case "$in":
-                                return lDRiferimento.contains(dValore);
-                            case "$nin":
-                                return lDRiferimento.contains(dValore);
-                            case "$bt": // caso in cui devono ritornare valori compresi tra due estremi
-                                double estremoInf = lDRiferimento.get(0);
-                                double estremoSup = lDRiferimento.get(1);
-                                return dValore <= estremoSup && dValore >= estremoInf;
-                            default:
-                                String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
-                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
+                        if (op.equals("$in")) return lDRiferimento.contains(dValore);
+                        else if (op.equals("$nin"))
+                            return lDRiferimento.contains(dValore);
+                        else if (op.equals("$bt")) { // caso in cui devono ritornare valori compresi tra due estremi
+                            double estremoInf = lDRiferimento.get(0);
+                            double estremoSup = lDRiferimento.get(1);
+                            return dValore <= estremoSup && dValore >= estremoInf;
+                        } else {
+                            String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
                         }
                     } else
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La lista di riferimenti è vuota o contiene elementi non validi");
@@ -74,12 +71,11 @@ public class DayCareFilters {
                 String sValue = ((String) valore); //conversione in String
                 if (riferimento instanceof String) { //se riferimento è una stringa
                     String sRiferimento = ((String) riferimento); // conversione come sopra
-                    switch (op) {
-                        case "$not":
-                            return !sValue.equals(sRiferimento); // si utilizza il metodo equals() della classe String per il confronto
-                        default:
-                            String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
-                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
+                    if (op.equals("$not"))
+                        return !sValue.equals(sRiferimento); // si utilizza il metodo equals() della classe String per il confronto
+                    else {
+                        String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
                     }
                 } else if (riferimento instanceof List) { //se riferimento è una lista
                     List lRiferimento = ((List) riferimento); //conversione in List
@@ -88,14 +84,13 @@ public class DayCareFilters {
                         for (Object elem : lRiferimento) {  //for-each
                             lSRiferimento.add((String) elem);
                         }
-                        switch (op) {
-                            case "$in":
-                                return lSRiferimento.contains(sValue);
-                            case "$nin":
-                                return lSRiferimento.contains(sValue);
-                            default:
-                                String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
-                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
+                        if (op.equals("$in"))
+                            return lSRiferimento.contains(sValue);
+                        else if (op.equals("$nin"))
+                            return lSRiferimento.contains(sValue);
+                        else {
+                            String stampaErrore = "L'operatore: " + op + " non è valido per i dati " + valore + ", " + riferimento;
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, stampaErrore);
                         }
                     } else
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La lista di riferimenti è vuota o contiene elementi non validi");
@@ -122,7 +117,7 @@ public class DayCareFilters {
         List<Integer> valoriFiltrati = new ArrayList<>();
         for (int i = 0; i < valori.size(); i++) {
             Object val = valori.get(i);
-            if (val!=null && sceltaFiltro(val, op, riferimento)) //chiamata al metodo sceltaFiltro precedentemente implementato
+            if (val != null && sceltaFiltro(val, op, riferimento)) //chiamata al metodo sceltaFiltro precedentemente implementato
                 valoriFiltrati.add(i);
         }
         return valoriFiltrati;
