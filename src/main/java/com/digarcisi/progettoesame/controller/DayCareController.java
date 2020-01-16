@@ -88,7 +88,13 @@ public class DayCareController {
         return filtro;
     }
 
-
+    /**
+     * Metodo che gestisce la richiesta DELETE alla rotta "/delete"
+     *
+     * @param nomeCampo nome del campo su cui si vuole applicare il filtro
+     * @param body      contenente i criteri
+     * @return viene restituita una lista con i dati eliminati
+     */
     @DeleteMapping("/delete")
     public List<DayCareChildren> deleteCampoFiltrato(@RequestParam(value = "campo", required = true, defaultValue = "") String nomeCampo, @RequestBody String body) {
         Map<String, Object> filtro = filtroParsato(body);
@@ -101,8 +107,8 @@ public class DayCareController {
     /**
      * Metodo che gestisce una richiesta POST alla rotta "/dataset"
      *
-     * @param body body della richiesta POST
-     * @return lista di oggetti che soddisfano le condizioni sul filtro
+     * @param body della richiesta POST contenente i criteri per il filtraggio
+     * @return lista di oggetti che soddisfano le condizioni imposte
      */
     @PostMapping("/dataset")
     public List getDatasetFiltrato(@RequestBody String body) {
@@ -133,8 +139,14 @@ public class DayCareController {
         return lista;
     }
 
+    /**
+     * Metodo che gestisce la richiesta POST alla rotta "/add"
+     *
+     * @param body si inseriscono i dati nel body
+     * @return restituisce l'ultima riga del dataset, ossia quella aggiunta
+     */
     @PostMapping("/add")
-public DayCareChildren add(@RequestBody String body) {
-    return service.parseadd(body);
-}
+    public DayCareChildren add(@RequestBody String body) {
+        return service.parseadd(body);
+    }
 }

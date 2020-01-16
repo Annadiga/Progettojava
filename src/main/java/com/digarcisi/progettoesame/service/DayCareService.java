@@ -181,38 +181,55 @@ public class DayCareService {
         return Statistics.getAllStats(nomeCampoStats, valoriFiltrati);
     }
 
+    /**
+     * Metodo che crea una mappa per aggiungere dati
+     *
+     * @param body in cui inserire i nuovi dati
+     * @return ultima riga del dataset (aggiornata con il nuovo record)
+     */
     public DayCareChildren parseadd(String body) {
         Map<String, Object> mappa = new BasicJsonParser().parseMap(body);
         Object appoggio = mappa.get("values");
         List elem = (List) appoggio;
-        if (elem.size() != 32) {
+        //controlla che i campi inseriti siano 32, ossia gli stessi del dataset
+        if (elem.size() != 32) {//stampa messaggio di errori se il numero è diverso da 32
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Errore! Non sono stati inseriti 32 campi");
         }
-        for (int i = 0; i < elem.size(); i++) {
+        for (int i = 0; i < elem.size(); i++) {//scorre la lista
             if (i == 0 || i == 1) {
-                if (!(elem.get(i) instanceof String)) {
+                if (!(elem.get(i) instanceof String)) {//se i primi due campi non sono stringhe stampa un messaggio di errore
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il " + (i + 1) + "° campo inserito :" + elem.get(i) + " deve essere una stringa!");
                 }
             }
             if (i > 1) {
-                if (!(elem.get(i) instanceof Number)) {
+                if (!(elem.get(i) instanceof Number)) {//se i campi successivi a 1 non sono numeri stampa un messaggio di errore
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il " + (i + 1) + "° campo inserito :" + elem.get(i) + " deve essere un numero!");
                 }
             }
         }
-        double[] c = new double[30];
-        for (int i = 2; i < elem.size(); i++) {
+        double[] c = new double[30];// creo un vettore di double in cui poter inserire i valori numerici
+        for (int i = 2; i < elem.size(); i++) {//il vettore parte dalla seconda posizione e arriva fino alla fine della lista
             c[i - 2] = ((Number) elem.get(i)).doubleValue();
         }
-        DayCareChildren d = new DayCareChildren(elem.get(0).toString(), elem.get(1).toString(), c);
-        getDataset().add(d);
-        return (dataset.get(dataset.size() - 1));
+        DayCareChildren d = new DayCareChildren(elem.get(0).toString(), elem.get(1).toString(), c);// creo il nuovo record costituito da due stringhe
+        //come primi elementi e da 30 numeri
+        getDataset().add(d);//salvo tale oggetto nel dataset
+        return (dataset.get(dataset.size() - 1));//restituisco l'oggetto in fondo al dataset
     }
 
+    /**
+     * Metodo che restituisce i dati eliminati
+     *
+     * @param nomecampo   su cui applicare la selezione
+     * @param op          operatore per il filtraggio
+     * @param riferimento valore di confronto
+     * @return lista di dati che sono stati eliminati in base al filtro applicato
+     */
     public List<DayCareChildren> deletebycampo(String nomecampo, String op, Object riferimento) {
-        List<DayCareChildren> dati_da_eliminare = getDatasetFiltrato(nomecampo, op, riferimento);
-        dataset.removeAll(dati_da_eliminare);
-        if (dati_da_eliminare.isEmpty())
+        List<DayCareChildren> dati_da_eliminare = getDatasetFiltrato(nomecampo, op, riferimento); // si crea una lista per i dati da eliminare
+        //e la si pone uguale alla lista di oggetti che soddisfano i criteri indicati
+        dataset.removeAll(dati_da_eliminare); //si rimuovono i dati contenuti nella lista
+        if (dati_da_eliminare.isEmpty())//si stampa un messaggio di errore se la lista è vuota
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nessun campo trovato con questo valore!");
         return dati_da_eliminare;
     }
