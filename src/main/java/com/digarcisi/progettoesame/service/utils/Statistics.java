@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Classe astratta contenente l'implementazione dei metodi per le statistiche
+ * Classe contenente l'implementazione dei metodi per ottenere le statistiche
  */
-public abstract class Statistics {
+public class Statistics {
     /**
-     * Metodo per contare gli elementi di una lista
+     * Metodo che consente il conteggio degli elementi di una lista e ne restituisce la dimensione
      *
-     * @param lista lista valori
-     * @return dimensione della lista
+     * @param lista valori contenuti nella lista
+     * @return restituisce la dimensione della lista
      */
     public static int count(List lista) {
         return lista.size();
