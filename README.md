@@ -69,13 +69,63 @@ localhost:8080/stats?campo=2018
 
 POST
 
- `localhost:8080/stats`  (nel body:  `{ "2017" : { "$not" : 30 } }`) 
- `localhost:8080/stats?campo=2018`  (nel body  `{ "2018" : { "$gt" : 30 } }`  ) se nel body viene inserito  un anno differente verrà preso in considerazione quello del nomecampo nella richiesta POST
- 
+ `localhost:8080/stats`   (nel body:  `{ "2017" : { "$not" : 30 } }`)   
+ `localhost:8080/stats?campo=2018`    (nel body  `{ "2018" : { "$gt" : 30 } }`  ) se nel body viene inserito  un anno differente verrà preso in considerazione quello del nomecampo nella richiesta POST 
 `localhost:8080/stats`  (nel body  `{ "indic_ur" : { "$not" : TE1001I } }`)
 `localhost:8080/dataset` (nel body `{ "indic_ur" : { "$not" : TE1001V} }`)
 
+# Changelog
 
+**ULTERIORI RICHIESTE POSSIBILI** (Tramite Postman)
+**RICHIESTA POST**
+
+ - **/add**: consente di creare una nuova rotta per inserire mediante POST nuovi dati. Essi vengono passati in formato array JSON nel body attraverso la seguente sintassi
+    
+
+>  `{ "values" : ["stringa1", "stringa2", "valori numerici"] }`
+
+in **"stringa1"** e **"stringa2"** inserire i valori letterali desiderati, in **"valori numerici"** 30 dati numerici corrispondenti ai campi dal 1990 al 2019 presenti nel dataset. La nuova rotta consente quindi l'aggiunta solo se gli inserimenti sono compatibili con la struttura del dataset. Se non è presente un dato in un determinato anno si può scrivere -1 per indicarlo. 
+**ESEMPIO** (con status code 200 OK)
+
+    { "values" : [indicTE01,AU001,-1,100,34.4,47,55,65,789,843,932,103,115,120,132,14.6,157,16.23,17.4,185.4,193.2,209,212,23,25,276,24.3,-1,0,24,27,30] }
+   se al posto di un campo letterale viene inserito un numero e viceversa viene stampato un messaggio di errore su quel campo (in cui viene specificato il tipo di dato che si sarebbe dovuto inserire)
+   **ESEMPIO** (con messaggio di errore)
+ 
+
+      { "values" : [27,AU001,-1,100,34.4,47,55,65,789,843,932,103,115,120,132,14.6,157,16.23,17.4,185.4,193.2,209,212,23,25,276,24.3,-1,0,24,27,30] }
+         
+messaggio bad request 
+
+
+> "message":  "Il 1° campo inserito :27 deve essere una stringa!"
+
+**RICHIESTA DELETE**
+
+ - **/delete** : attraverso questa richiesta è possibile eliminare una serie di dati filtrati. Nel body sarà possibile inserire il criterio secondo la struttura
+
+> {"campo" : {"operatore" : "riferimento"} }
+
+**ESEMPIO**
+**DELETE**
+ `localhost:8080/delete`   (nel body:  `{ "2007" : { "$gt" :33} }`)
+ è possibile verificare se la rimozione è avvenuta o meno andando nuovamente a cancellare gli stessi dati indicati nel body tramite un nuovo invio di richiesta: in questo caso comparirà un messaggio di errore che comunicherà l'assenza di campi per la richiesta effettuata
+
+     "message":  "Nessun campo trovato con questo valore!"
+     
+
+ **GESTIONE ERRORI**
+Sono stati gestiti errori sia nel caso in cui il campo inserito nel body non corrisponda ad uno di quelli presenti nel dataset
+(**esempio**: una richiesta (DELETE con rotta \delete o POST con rotta \stats) nel body del tipo
+`{ "1984" : { "$gt" :27} }` 
+restituisce un messaggio di errore di bad request con messaggio 
+`"message":  "Il campo 1984 non esiste!"`)
+sia nel caso in cui il valore per filtrare  non sia compatibile con i dati presenti nel dataset 
+(**esempio** richiesta POST alla rotta /stats con body del tipo
+`{ "2008" : { "$gt" :555555555} }`
+restituisce :
+`"message":  "Non è stato trovato nessun campo 2008 per un filtro con il valore selezionato."`)
+**ALTRE MODIFICHE** 
+Sono state apportate ulteriori modifiche formali nella classe per la realizzazione dei filtri e si è garantita una maggiore chiarezza nella spiegazione dei metodi nella classe delle statistiche. Alla luce delle aggiunte sono stati revisionati i diagrammi UML.
 
 ## DIAGRAMMI UML
 
